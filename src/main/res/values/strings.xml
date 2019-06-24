@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ThreadTutorial01</string>
+    <string name="download">Download</string>
+    <string name="ImageURL">https://upload.wikimedia.org/wikipedia/en/thumb/e/e0/Kelaniya.png/220px-Kelaniya.png</string>
+</resources>
