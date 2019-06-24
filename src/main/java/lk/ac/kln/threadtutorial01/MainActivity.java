@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -29,24 +30,29 @@ public class MainActivity extends AppCompatActivity {
         imageDownloadTask.execute(getString(R.string.ImageURL));
     }
 
-    private class ImageDownloadTask extends AsyncTask<String,Void,Bitmap>{
+    private class ImageDownloadTask extends AsyncTask<String,Integer,Bitmap>{
         private ProgressDialog progressDialog = null;
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
 
-            //*************************************************************
-            //You cant do like this, Because ImageDownloadTask Java class
-            // is separate class in MainActivity.java, You cant use same
-            // context
-            //*************************************************************
-            //progressDialog = new ProgressDialog(getApplicationContext());
-            //*************************************************************
+            /*************************************************************
+             *
+            You cant do like this, Because ImageDownloadTask Java class
+             is separate class in MainActivity.java, You cant use same
+             context
+            *************************************************************
+             *
+            progressDialog = new ProgressDialog(getApplicationContext());
+
+            *************************************************************/
 
             progressDialog = new ProgressDialog(MainActivity.this);
             progressDialog.setMessage("Downloading image....");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setCancelable(false);
+            progressDialog.setProgress(0);
+            progressDialog.setMax(100);
             progressDialog.show();
         }
         @Override
@@ -58,12 +64,23 @@ public class MainActivity extends AppCompatActivity {
                 connection.setDoInput(true);
                 connection.connect();
                 InputStream inputStream = connection.getInputStream();
+                for(int i =0; i<100; i++){
+                    Integer arr[] = {i};
+                    publishProgress(arr);
+                    SystemClock.sleep(100);
+                }
                 bitmap = BitmapFactory.decodeStream(inputStream,null,null);
             }catch (IOException e) {
                 Toast.makeText(getApplicationContext(),"Error"+e,Toast.LENGTH_LONG).show();
             }
             return bitmap;
         }
+
+        @Override
+        protected void onProgressUpdate(Integer[] integers){
+            progressDialog.setProgress(integers[0]);
+        }
+
         @Override
         protected void onPostExecute(Bitmap bitmap){
             super.onPostExecute(bitmap);
@@ -75,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Null bitmap object",Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
 
